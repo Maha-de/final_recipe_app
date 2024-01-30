@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/pages/splash_screen.pages.dart';
 import 'package:recipe_app/provider/app_auth.provider.dart';
+import 'package:recipe_app/provider/favorite.provider.dart';
+import 'package:recipe_app/provider/ingredient.provider.dart';
+import 'package:recipe_app/provider/recipe.provider.dart';
 
 import 'firebase_options.dart';
 
@@ -21,6 +24,10 @@ Future<void> main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AppAuthProvider()),
+    ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+    ChangeNotifierProvider(create: (_) => IngredientsProvider()),
+    ChangeNotifierProvider(create: (_) => RecipeProvider()),
+
   ], child: MyApp()));
 }
 

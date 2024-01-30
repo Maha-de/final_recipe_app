@@ -52,6 +52,7 @@ class AppAuthProvider extends ChangeNotifier {
 
         if (credentials.user != null) {
           await credentials.user?.updateDisplayName(nameController!.text);
+          // FirebaseAuth.instance.currentUser.updatePhotoURL(photoURL);
           providerDispose();
           Navigator.push(
               context, MaterialPageRoute(builder: (_) => HomePage()));

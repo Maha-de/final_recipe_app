@@ -1,142 +1,208 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recipe_app/widgets/favorite_icon.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:recipe_app/provider/recipe.provider.dart';
 
-class RecommendedWidget extends StatelessWidget {
-  final Image imageName;
-  final String headerText;
-  final String titleText;
-  final String caloriesText;
-  final String timeText;
-  final String servingText;
-  final String description;
-  final String ingredients;
-  const RecommendedWidget(
-      {required this.imageName,
-        required this.headerText,
-        required this.titleText,
-        required this.caloriesText,
-        required this.timeText,
-        required this.servingText,
-        required this.description,
-        required this.ingredients,
-        super.key});
+import '../models/recipe.models.dart';
+import '../utilities/edges.dart';
+
+class RecommendedWidget extends StatefulWidget {
+  final Recipe? recipe;
+
+  const RecommendedWidget({required this.recipe, super.key});
 
   @override
+  State<RecommendedWidget> createState() => _RecipeWidgetState();
+}
+
+class _RecipeWidgetState extends State<RecommendedWidget> {
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Container(
-          height: 200,
-          width: 350,
-          decoration: BoxDecoration(
+    return Padding(
+      padding:
+      const EdgeInsets.symmetric(horizontal: Edges.appHorizontalPadding),
+      child: Stack(
+        children: [
+          InkWell(
+            onTap: () {
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (_) => RecipeDetailsPage(
+              //           recipe: widget.recipe!,
+              //         )));
+            },
+            child: Container(
+              height: 150,
+              width: 345,
+              decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Colors.grey.shade300),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              imageName,
+              child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Image.network(widget.recipe?.image_url ?? "",
+                fit: BoxFit.cover,
+                width: 100,
+                height: 70,),
               Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      headerText,
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                    Container(
-                      width: 200,
-                      child: Text(
-                        titleText,
-                        textAlign: TextAlign.start,
-                        maxLines: 2,
-                      ),
-                    ),
-                    Container(
-                      width: 200,
-                      child: Text(
-                        description,
-                        textAlign: TextAlign.start,
-                        maxLines: 2,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star_border_outlined,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_border_outlined,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_border_outlined,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_border_outlined,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_border_outlined,
-                          size: 20,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          caloriesText,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.deepOrange,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_alarm,
-                          size: 20,
-                        ),
-                        Text(timeText, style: TextStyle(fontSize: 12)),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Icon(
-                          Icons.table_bar,
-                          size: 20,
-                        ),
-                        Text(servingText, style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                    Container(
-                      width: 200,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Text(
-                          ingredients,
-                          textAlign: TextAlign.start,
-                          maxLines: 2,
-                        ),
-                      ),
+              padding: const EdgeInsets.only(top: 10, bottom: 5),
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Text(
+              widget.recipe?.type ?? 'No Type Found',
+                style: TextStyle(
+                    color: Color(0xff2097b3),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+    )),
+    Container(
+    width: 150,
+    child: Text(
+      widget.recipe?.title ?? "",
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+    ),
+    )),
+    // Container(
+    // width: 200,
+    // child: Text(
+    // description,
+    // textAlign: TextAlign.start,
+    // maxLines: 2,
+    // ),
+    // ),
+    Row(
+    children: [
+      RatingBar.builder(
+        initialRating: 4,
+        minRating: 1,
+        direction: Axis.horizontal,
+        allowHalfRating: true,
+        updateOnDrag: false,
+        unratedColor: Colors.grey,
+        itemCount: 5,
+        itemSize: 15,
+        itemBuilder: (context, _) => const Icon(
+          Icons.star,
+          color: Colors.amber,
+        ),
+        onRatingUpdate: (rating) {
+          print(rating);
+        },
+      ),
+    // Icon(
+    // Icons.star_border_outlined,
+    // size: 20,
+    // ),
+    // Icon(
+    // Icons.star_border_outlined,
+    // size: 20,
+    // ),
+    // Icon(
+    // Icons.star_border_outlined,
+    // size: 20,
+    // ),
+    // Icon(
+    // Icons.star_border_outlined,
+    // size: 20,
+    // ),
+    // Icon(
+    // Icons.star_border_outlined,
+    // size: 20,
+    // ),
+    SizedBox(
+    width: 5,
+    ),
+    Text(
+      widget.recipe?.calories.toString() ?? '',
+      style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.normal),
+    ),
+    ],
+    ),
+    Row(
+    children: [
+    Icon(
+    Icons.access_alarm,
+    size: 20,
+    ),
+    Text(widget.recipe?.total_time.toString() ?? "",
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.normal,
+          color: Colors.grey,)),
+    SizedBox(
+    width: 7,
+    ),
+    Icon(
+    Icons.room_service_outlined,
+    size: 20,
+    ),
+    Text("${widget.recipe?.servings ?? 0}",
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.normal,
+          color: Colors.grey,)),
+    ],
+    ),
+    // Container(
+    // width: 200,
+    // child: SingleChildScrollView(
+    // physics: const AlwaysScrollableScrollPhysics(),
+    // scrollDirection: Axis.horizontal,
+    // child: Text(
+    // ingredients,
+    // textAlign: TextAlign.start,
+    // maxLines: 2,
+    // ),
+    // ),
+    // )
+    ],
+    ),
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0, right: 10),
+                child: InkWell(
+                    onTap: () {
+                      Provider.of<RecipeProvider>(context, listen: false)
+                          .addRecipeToUserFavourite(
+                          widget.recipe!.docId!,
+                          !(widget.recipe?.favourite_users_ids?.contains(
+                              FirebaseAuth.instance.currentUser?.uid) ??
+                              false));
+                    },
+                    child: (widget.recipe?.favourite_users_ids?.contains(
+                        FirebaseAuth.instance.currentUser?.uid) ??
+                        false
+                        ? const
+                    Icon(
+                      Icons.favorite_rounded,
+                      size: 30,
+                      color: Colors.red,
                     )
-                  ],
+                        : const Icon(
+                      Icons.favorite_rounded,
+                      size: 30,
+                      color: Colors.grey,
+                    )
+                    )
                 ),
               ),
-              const Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 10, right: 10),
-                    child: FavoriteIcon(),
-                  ),
-                ],
-              )
             ],
-          )),
-    );
+          ),
+        ],
+      ),
+    ))]));
   }
 }
+
