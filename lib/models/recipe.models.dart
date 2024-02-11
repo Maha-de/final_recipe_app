@@ -9,20 +9,21 @@ class Recipe {
   String? servings;
   List<String>? ingredients;
   List<String>? favourite_users_ids;
-  String? rate;
+  List<String>? recently_viewd_users_ids;
+  num? rate;
   String? type;
-
-
-
+  // bool? isFresh;
 
   Recipe();
 
   Recipe.fromJson(Map<String, dynamic> data, [String? id]) {
     docId = id;
     title = data['title'];
+    // isFresh = data['isFresh'];
     description = data['description'];
-    directions = data['directions'] != null ?
-    Map<String, String>.from(data['directions']): null;
+    directions = data['directions'] != null
+        ? Map<String, String>.from(data['directions'])
+        : null;
     calories = data['calories'];
     image_url = data['image_url'];
     total_time = data['total_time'];
@@ -32,12 +33,14 @@ class Recipe {
         : null;
     favourite_users_ids = data['favourite_users_ids'] != null
         ? List<String>.from(
-        data['favourite_users_ids'].map((e) => e.toString()))
+            data['favourite_users_ids'].map((e) => e.toString()))
+        : null;
+    recently_viewd_users_ids = data['favourite_users_ids'] != null
+        ? List<String>.from(
+            data['recently_viewd_users_ids'].map((e) => e.toString()))
         : null;
     type = data['type'];
     rate = data['rate'];
-
-
   }
 
   Map<String, dynamic> toJson() {
@@ -47,7 +50,7 @@ class Recipe {
       "directions": directions,
       "image_url": image_url,
       "type": type,
-      "rate": rate,
+      // "rate": rate,
       "calories": calories,
       "total_time": total_time,
       "servings": servings,

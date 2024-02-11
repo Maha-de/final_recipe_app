@@ -29,12 +29,12 @@ class _AllRecipesPageState extends State<AllRecipesPage> {
                 : (recipesProvider.recipeList?.isEmpty ?? false)
                 ? const Text('No Data Found')
                 : FlexibleGridView(
-              children: recipesProvider.recipeList!
-                  .map((e) => RecipeWidget(recipe: e))
-                  .toList(),
               axisCount: GridLayoutEnum.twoElementsInRow,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
+              children: recipesProvider.recipeList!
+                  .map((e) => RecipeWidget(recipe: e))
+                  .toList(),
             )));
   }
 }

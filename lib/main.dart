@@ -28,7 +28,7 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (_) => IngredientsProvider()),
     ChangeNotifierProvider(create: (_) => RecipeProvider()),
 
-  ], child: MyApp()));
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         fontFamily: "Hellix",
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
       home: const SplashScreen(),

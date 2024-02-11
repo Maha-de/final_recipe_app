@@ -27,7 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Stack(
                 children: [
                   Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           image: DecorationImage(image: AssetImage("assets/images/background.png"),
                               fit: BoxFit.cover)
                       )),
@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     padding: const EdgeInsets.fromLTRB(80, 20, 10, 20),
                     child: Container(
                       height: 250, width: 250,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           image: DecorationImage(image: AssetImage("assets/images/logo3.png",),)
                       ),
                     ),
@@ -46,40 +46,40 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Center(
                       child: ListView(
                         children: [
-                          SizedBox(height: 50,),
-                          Center(
+                          const SizedBox(height: 50,),
+                          const Center(
                               child: Text("Register", style: TextStyle(fontSize: 20, color: Colors.white,
                                   fontWeight: FontWeight.bold),)),
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           TextFormField(
                             controller: authProvider.nameController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               errorStyle: TextStyle(color: Colors.red),
                               prefixIcon: Icon(Icons.person_outline, color: Colors.white),
                               labelText: "Full Name",
                               labelStyle: TextStyle(color: Colors.white),
                               enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),                  ),
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: const TextStyle(fontSize: 15, color: Colors.white),
                           ),
-                          SizedBox(height: 20,),
+                          const SizedBox(height: 20,),
                           TextFormField(
                             controller: authProvider.emailController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               errorStyle: TextStyle(color: Colors.red),
                               prefixIcon: Icon(Icons.email_outlined, color: Colors.white),
                               labelText: "Email Address",
                               labelStyle: TextStyle(color: Colors.white),
                               enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
                             ),
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: const TextStyle(fontSize: 15, color: Colors.white),
                           ),
-                          SizedBox(height: 20,),
+                          const SizedBox(height: 20,),
                           TextFormField(
                               controller: authProvider.passwordController,
                               obscureText: authProvider.obSecureText,
                               decoration: InputDecoration(
-                                  errorStyle: TextStyle(color: Colors.red),
-                                  prefixIcon: Icon(Icons.lock_outline, color: Colors.white),
+                                  errorStyle: const TextStyle(color: Colors.red),
+                                  prefixIcon: const Icon(Icons.lock_outline, color: Colors.white),
                                   suffixIcon:
                                   // authProvider.obSecureText ?
                                   //     Icon(Icons.visibility_off)
@@ -92,9 +92,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
 
                                   labelText: "Password",
-                                  labelStyle: TextStyle(color: Colors.white),
-                                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white))                  ),
-                              style: TextStyle(fontSize: 15, color: Colors.white),
+                                  labelStyle: const TextStyle(color: Colors.white),
+                                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white))                  ),
+                              style: const TextStyle(fontSize: 15, color: Colors.white),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'password is required';
@@ -110,23 +110,24 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: ElevatedButton(onPressed: (){
                               authProvider.signUp(context);
                               Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => LoginPage()));
+                                  MaterialPageRoute(builder: (context) => const LoginPage()));
 
-                            }, child: Text("Register", style: TextStyle(fontSize: 18, color: Colors.white),),
-                                style: ElevatedButton.styleFrom(primary: Colors.deepOrange,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
+                            },
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                                child: const Text("Register", style: TextStyle(fontSize: 18, color: Colors.white),)
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(80, 80, 40, 10),
                             child: Row(children: [
-                              Text("Already registered? ", style: TextStyle(color: Colors.white,),
+                              const Text("Already registered? ", style: TextStyle(color: Colors.white,),
                                 textAlign: TextAlign.center,),
                               TextButton(onPressed: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
 
                               },
-                                  child: Text("Sign in", style: TextStyle(color: Colors.deepOrange)))
+                                  child: const Text("Sign in", style: TextStyle(color: Colors.deepOrange)))
                             ],),
                           )
                         ],

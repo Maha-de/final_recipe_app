@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recipe_app/pages/forget_password.pages.dart';
 import 'package:recipe_app/pages/homepage.pages.dart';
 import 'package:recipe_app/pages/register.pages.dart';
 import 'package:recipe_app/provider/app_auth.provider.dart';
@@ -95,14 +96,18 @@ class _LoginPageState extends State<LoginPage> {
                                 return null;
                               }
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(210, 10, 0, 20),
-
-                            child: TextButton(onPressed: (){
-
-                            }, child:
-                            Text("Forgot Password?", textAlign: TextAlign.right,
-                                style: TextStyle(color: Colors.blue))),
+                          Row(
+                            // padding: const EdgeInsets.fromLTRB(210, 10, 0, 20),
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                                  TextButton(onPressed: (){
+                                     Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) =>
+                                    ForgetPasswordPage()));
+                                                              }, child:
+                                      Text("Forgot Password?", textAlign: TextAlign.right,
+                                  style: TextStyle(color: Colors.blue))),
+                                ],
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 30, 40, 20),
@@ -113,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                                       HomePage()));
                               // }
                             }, child: Text("Sign In", style: TextStyle(fontSize: 18, color: Colors.white),),
-                              style: ElevatedButton.styleFrom(primary: Colors.deepOrange,
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
 
                             ),

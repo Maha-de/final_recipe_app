@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +9,9 @@ import 'package:recipe_app/models/recipe.models.dart';
 import 'package:recipe_app/pages/Recently.pages.dart';
 import 'package:recipe_app/pages/Settings.pages.dart';
 import 'package:recipe_app/pages/favorite.pages.dart';
+import 'package:recipe_app/pages/filter.pages.dart';
 import 'package:recipe_app/pages/ingredient.pages.dart';
+import 'package:recipe_app/pages/search_test.dart';
 import 'package:recipe_app/provider/app_auth.provider.dart';
 import 'package:recipe_app/provider/recipe.provider.dart';
 import 'package:recipe_app/utilities/edges.dart';
@@ -22,266 +27,340 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   late ZoomDrawerController controller;
+  final controllerSearch = TextEditingController();
   final Stream<QuerySnapshot> _usersStream =
   FirebaseFirestore.instance.collection('recipes').snapshots();
+  List<DocumentSnapshot> _data = [];
+
+
+  Future<String> _getProfileImageUrl() async {
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+    final Reference storageRef = FirebaseStorage.instance.ref().child(
+        'profileImageUrl/$userId');
+    final String imageUrl = await storageRef.getDownloadURL();
+    return imageUrl;
+  }
 
   @override
   void initState() {
     controller = ZoomDrawerController();
     Provider.of<RecipeProvider>(context, listen: false).getRecipes();
+    Provider.of<RecipeProvider>(context, listen: false).getFreshRecipes();
+    Provider.of<RecipeProvider>(context, listen: false).getRecommendedRecipes();
+    // _fetchData();
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return ZoomDrawer(
-        slideWidth: MediaQuery
-            .of(context)
-            .size
-            .width * 0.65,
-        menuBackgroundColor: Colors.grey.shade300,
-        boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 5)],
-        disableDragGesture: true,
-        mainScreenTapClose: true,
-        controller: controller,
-        drawerShadowsBackgroundColor: Colors.grey,
-        menuScreen: Scaffold(
-          backgroundColor: Colors.white,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ListTile(
-                  onTap: () {
-                    Colors.deepOrange;
-                    controller.close?.call();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => HomePage()));
-                  },
-                  leading: Icon(
-                    Icons.home,
-                    // color: Colors.deepOrange,
-                  ),
-                  title: Text('Home'),
-                ),
-                ListTile(
-                  onTap: () {
-                    controller.close?.call();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => IngredientPage()));
-                  },
-                  leading: Icon(Icons.favorite_border_outlined),
-                  title: Text('Ingredients'),
-                ),
-                ListTile(
-                  onTap: () {
-                    controller.close?.call();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => FavoritePage()));
-                  },
-                  leading: Icon(Icons.favorite_border_outlined),
-                  title: Text('Favorites'),
-                ),
-                ListTile(
-                  onTap: () {
-                    controller.close?.call();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => RecentlyPage()));
-                  },
-                  leading: Icon(Icons.favorite_border_outlined),
-                  title: Text('Recently Viewed'),
-                ),
-                ListTile(
-                  onTap: () {
-                    Colors.deepOrange;
-                    controller.close?.call();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => SettingsPage()));
-                  },
-                  leading: Icon(
-                    Icons.home,
-                    // color: Colors.deepOrange,
-                  ),
-                  title: Text('Settings'),
-                ),
-                ListTile(
-                  onTap: () {
-                    Provider.of<AppAuthProvider>(context, listen: false)
-                        .signOut(context);
-                  },
-                  leading: Icon(Icons.logout),
-                  title: Text('Logout'),
-                )
-              ],
-            ),
-          ),
-        ),
-        mainScreen: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            leading: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: Edges.appHorizontalPadding),
-              child: InkWell(
-                  onTap: () {
-                    controller.toggle!();
-                  },
-                  child: Icon(Icons.menu)),
-            ),
-            actions: [
-              Icon(
-                Icons.notifications_none_outlined,
-                size: 30,
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: Edges.appHorizontalPadding),
-            child: ListView(
-              // verticalDirection: VerticalDirection.down,
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              // mainAxisSize: MainAxisSize.max,
-              // scrollDirection: Axis.vertical,
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text("Bonjour, Maha", style: TextStyle(fontSize: 20)),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "What would you like to cook today?",
-                    style: TextStyle(fontSize: 30),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.grey.shade300),
-                        height: 50,
-                        width: 280,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            labelText: "Search for recipes",
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none),
+            return ZoomDrawer(
+                slideWidth: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.65,
+                menuBackgroundColor: Colors.grey.shade300,
+                boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 5)],
+                disableDragGesture: true,
+                mainScreenTapClose: true,
+                controller: controller,
+                drawerShadowsBackgroundColor: Colors.grey,
+                menuScreen: Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircleAvatar(
+                          radius: 50,
+                          backgroundImage: CachedNetworkImageProvider(
+                              'https://firebasestorage.googleapis.com/v0/b/final-recipe-app.appspot.com/o/profile%2Fistockphoto-484270482-1024x1024.jpg?alt=media&token=0275992a-38cd-4249-958b-93204484471d'),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            Colors.deepOrange;
+                            controller.close?.call();
+                            Navigator.push(
+                                context, MaterialPageRoute(
+                                builder: (_) => const HomePage()));
+                          },
+                          leading: const Icon(
+                            Icons.home,
+                            // color: Colors.deepOrange,
                           ),
+                          title: const Text('Home'),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            controller.close?.call();
+                            Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (_) => const IngredientPage()));
+                          },
+                          leading: const Icon(Icons.fastfood),
+                          title: const Text('Ingredients'),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            controller.close?.call();
+                            Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (_) => const FavoritePage()));
+                          },
+                          leading: const Icon(Icons.favorite_border_outlined),
+                          title: const Text('Favorites'),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            controller.close?.call();
+                            Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (_) => const RecentlyPage()));
+                          },
+                          leading: const Icon(Icons.arrow_forward),
+                          title: const Text('Recently Viewed'),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            Colors.deepOrange;
+                            controller.close?.call();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const SettingsPage()));
+                          },
+                          leading: const Icon(
+                            Icons.settings,
+                            // color: Colors.deepOrange,
+                          ),
+                          title: const Text('Settings'),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            Provider.of<AppAuthProvider>(context, listen: false)
+                                .signOut(context);
+                          },
+                          leading: const Icon(Icons.logout),
+                          title: const Text('Logout'),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                mainScreen: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.white,
+                    leading: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: Edges.appHorizontalPadding),
+                      child: InkWell(
+                          onTap: () {
+                            controller.toggle!();
+                          },
+                          child: const Icon(Icons.menu)),
+                    ),
+                    actions: [
+                      InkWell(onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    SearchDemo(
+                                    )));
+                      },
+                        child: const Icon(
+                          Icons.notifications_none_outlined,
+                          size: 30,
                         ),
                       ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Container(
-                        height: 50,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.grey.shade300,
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.menu),
-                          onPressed: () {},
-                        ),
-                      )
                     ],
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  SectionHeader(sectionName: "Today's Fresh Recipes"),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Consumer<AppAuthProvider>(
-                      builder: (context, authProvider, _) =>
-                          Container(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    height: 200,
-                                    child: ListView.builder(
-                                        itemCount: 1,
-                                        scrollDirection: Axis.horizontal,
-                                        itemBuilder: (context, index) {
-                                          return Row(
-                                            children: [
-                                              Consumer<RecipeProvider>(
-                                                  builder: (ctx,
-                                                      recipeProvider, _) =>
-                                                  recipeProvider.recipeList ==
-                                                      null
-                                                      ? const CircularProgressIndicator()
-                                                      : (recipeProvider
-                                                      .recipeList?.isEmpty ??
-                                                      false)
-                                                      ? const Text(
-                                                      'No Data Found')
-                                                      : ListView.builder(
-                                                    shrinkWrap: true,
-                                                    scrollDirection: Axis
-                                                        .horizontal,
-                                                    itemCount: recipeProvider
-                                                        .recipeList!.length,
-                                                    itemBuilder: (ctx,
-                                                        index) =>
-                                                        RecipeWidget(
-                                                          recipe: recipeProvider
-                                                              .recipeList![index],),
-                                                  )),
-                                            ],
-                                          );
-                                        }),
+                  body: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: Edges.appHorizontalPadding),
+                    child: ListView(
+                      // verticalDirection: VerticalDirection.down,
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      // mainAxisSize: MainAxisSize.max,
+                      // scrollDirection: Axis.vertical,
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text("Bonjour, ${FirebaseAuth.instance.currentUser
+                              ?.email}",
+                              style: const TextStyle(fontSize: 20)),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text(
+                            "What would you like to cook today?",
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          SizedBox(
+                            width: 280,
+                            child: Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.grey.shade300),
+                                  height: 50,
+                                  width: 280,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (
+                                                  _) => const FilterPage()));
+                                    },
+                                    child: TextFormField(
+                                      decoration: const InputDecoration(
+                                        prefixIcon: Icon(Icons.search),
+                                        labelText: "Search for recipes",
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                      ),
+                                    ),
                                   ),
-                                  SectionHeader(sectionName: "Recommended"),
-                                  SizedBox(
-                                    height: 10,
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Container(
+                                  height: 50,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.grey.shade300,
                                   ),
-                                  SizedBox(width: 350,
-                                    child: Consumer<RecipeProvider>(
-                                        builder: (ctx,
-                                            recipeProvider, _) =>
-                                        recipeProvider.recipeList ==
-                                            null
-                                            ? const CircularProgressIndicator()
-                                            : (recipeProvider
-                                            .recipeList?.isEmpty ??
-                                            false)
-                                            ? const Text(
-                                            'No Data Found')
-                                            : ListView.separated(
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis
-                                              .vertical,
-                                          itemCount: recipeProvider
-                                              .recipeList!.length,
-                                          itemBuilder: (ctx,
-                                              index) =>
-                                              RecommendedWidget(
-                                                recipe: recipeProvider
-                                                    .recipeList![index],),
-                                          separatorBuilder: (context, index) { return SizedBox(height: 15);
-                                                         },
-                                        )),
-                                  )
-                                ],
-                              ),
+                                  child: IconButton(
+                                    icon: const Icon(Icons.menu),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (
+                                                  _) => const FilterPage()));
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
-                          ))
-                ]),
-          ),
-        ));
-  }
-}
-
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const SectionHeader(
+                              sectionName: "Today's Fresh Recipes"),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Consumer<AppAuthProvider>(
+                              builder: (context, authProvider, _) =>
+                                  Container(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(
+                                            height: 200,
+                                            child: ListView.builder(
+                                                itemCount: 1,
+                                                scrollDirection: Axis
+                                                    .horizontal,
+                                                itemBuilder: (context, index) {
+                                                  return Row(
+                                                    children: [
+                                                      Consumer<RecipeProvider>(
+                                                          builder: (ctx,
+                                                              recipeProvider,
+                                                              _) =>
+                                                          recipeProvider
+                                                              .freshRecipesList ==
+                                                              null
+                                                              ? const CircularProgressIndicator()
+                                                              : (recipeProvider
+                                                              .freshRecipesList
+                                                              ?.isEmpty ??
+                                                              false)
+                                                              ? const Text(
+                                                              'No Data Found')
+                                                              : ListView
+                                                              .builder(
+                                                            shrinkWrap:
+                                                            true,
+                                                            scrollDirection:
+                                                            Axis.horizontal,
+                                                            itemCount:
+                                                            recipeProvider
+                                                                .freshRecipesList!
+                                                                .length,
+                                                            itemBuilder: (ctx,
+                                                                index) =>
+                                                                RecipeWidget(
+                                                                  recipe: recipeProvider
+                                                                      .freshRecipesList![
+                                                                  index],
+                                                                ),
+                                                          )),
+                                                    ],
+                                                  );
+                                                }),
+                                          ),
+                                          const SectionHeader(
+                                              sectionName: "Recommended"),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          SizedBox(
+                                            width: 350,
+                                            child: Consumer<RecipeProvider>(
+                                                builder: (ctx, recipeProvider,
+                                                    _) =>
+                                                recipeProvider
+                                                    .recommendedRecipesList ==
+                                                    null
+                                                    ? const CircularProgressIndicator()
+                                                    : (recipeProvider
+                                                    .recommendedRecipesList
+                                                    ?.isEmpty ??
+                                                    false)
+                                                    ? const Text(
+                                                    'No Data Found')
+                                                    : ListView.separated(
+                                                  shrinkWrap: true,
+                                                  scrollDirection:
+                                                  Axis.vertical,
+                                                  itemCount: recipeProvider
+                                                      .recommendedRecipesList!
+                                                      .length,
+                                                  itemBuilder: (ctx,
+                                                      index) =>
+                                                      RecommendedWidget(
+                                                        recipe: recipeProvider
+                                                            .recommendedRecipesList![
+                                                        index],
+                                                      ),
+                                                  separatorBuilder:
+                                                      (context, index) {
+                                                    return const SizedBox(
+                                                        height: 15);
+                                                  },
+                                                )),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                        ]),
+                  ),
+                ));
+          }
+        }
 

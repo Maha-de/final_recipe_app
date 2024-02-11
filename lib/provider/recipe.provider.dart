@@ -7,18 +7,31 @@ import 'package:recipe_app/models/recipe.models.dart';
 import '../utilities/toast_message_status.dart';
 import '../widgets/toast_message.widgets.dart';
 
-
 class RecipeProvider extends ChangeNotifier {
   var value = {"type": "breakfast", "serving": 5, "total_time": 20};
+  String _profileImageUrl = '';
 
-  void getFilteredResult() async {
-    var ref = FirebaseFirestore.instance.collection('recipes');
+  String get profileImageUrl => _profileImageUrl;
 
-    for (var entry in value.entries) {
-      ref.where(entry.key, isEqualTo: entry.value);
+  void setImageUrl(String url) {
+    _profileImageUrl = url;
+    notifyListeners();
+  }
+
+  Future<void> getFilteredResult() async {
+    try {
+      var ref = FirebaseFirestore.instance.collection('recipes');
+
+      for (var entry in value.entries) {
+        ref.where(entry.key, isEqualTo: entry.value);
+      }
+
+      var result = await ref.get();
+      result;
+      print(result);
+    } catch (e) {
+      print("Error $e");
     }
-
-    var result = await ref.get();
   }
 
   List<Recipe>? _recipeList;
@@ -32,6 +45,14 @@ class RecipeProvider extends ChangeNotifier {
   List<Recipe>? _recommendedRecipesList;
 
   List<Recipe>? get recommendedRecipesList => _recommendedRecipesList;
+
+  List<Recipe>? _recentlyRecipesList;
+
+  List<Recipe>? get recentlyRecipesList => _recentlyRecipesList;
+
+  List<Recipe>? _filteredRecipesList;
+
+  List<Recipe>? get filteredRecipesList => _filteredRecipesList;
 
   Recipe? openedRecipe;
 
@@ -61,11 +82,14 @@ class RecipeProvider extends ChangeNotifier {
             result.docs.map((doc) => Recipe.fromJson(doc.data(), doc.id)));
       } else {
         _recipeList = [];
+        print(_recipeList?.length);
       }
       notifyListeners();
     } catch (e) {
       _recipeList = [];
       notifyListeners();
+      print(_recipeList?.length);
+      print('>>>>>error in update recipe$e');
     }
   }
 
@@ -74,7 +98,7 @@ class RecipeProvider extends ChangeNotifier {
       var result = await FirebaseFirestore.instance
           .collection('recipes')
           .where('isFresh', isEqualTo: true)
-          .limit(5)
+          .limit(4)
           .get();
 
       if (result.docs.isNotEmpty) {
@@ -87,15 +111,16 @@ class RecipeProvider extends ChangeNotifier {
     } catch (e) {
       _freshRecipesList = [];
       notifyListeners();
+      print('>>>>>error in update recipe$e');
     }
   }
 
-  Future<void> getRecommandedRecipes() async {
+  Future<void> getRecommendedRecipes() async {
     try {
       var result = await FirebaseFirestore.instance
           .collection('recipes')
           .where('isFresh', isEqualTo: false)
-          .limit(5)
+          .limit(4)
           .get();
       if (result.docs.isNotEmpty) {
         _recommendedRecipesList = List<Recipe>.from(
@@ -107,8 +132,43 @@ class RecipeProvider extends ChangeNotifier {
     } catch (e) {
       _recommendedRecipesList = [];
       notifyListeners();
+      print('>>>>>error in update recipe$e');
     }
   }
+  // added new to test the function
+  // Future<void> addRecentlyToUserFavourite(String recipeId, bool isAdd) async {
+  //   try {
+  //     OverlayLoadingProgress.start();
+  //     if (isAdd) {
+  //       await FirebaseFirestore.instance
+  //           .collection('recipes')
+  //           .doc(recipeId)
+  //           .update({
+  //         "recently_viewd_users_ids":
+  //         FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])
+  //       });
+  //     } else {
+  //       await FirebaseFirestore.instance
+  //           .collection('recipes')
+  //           .doc(recipeId)
+  //           .update({
+  //         "recently_viewd_users_ids":
+  //         FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid])
+  //       });
+  //       print(FieldValue);
+  //     }
+  //     await _updateRecipe(recipeId);
+  //     OverlayLoadingProgress.stop();
+  //   } catch (e) {
+  //     OverlayLoadingProgress.stop();
+  //     OverlayToastMessage.show(
+  //       widget: ToastMessageWidget(
+  //         message: 'Error : ${e.toString()}',
+  //         toastMessageStatus: ToastMessageStatus.failed,
+  //       ),
+  //     );
+  //   }
+  // }
 
   void addRecipeToUserRecentlyViewed(String recipeId) async {
     try {
@@ -117,7 +177,7 @@ class RecipeProvider extends ChangeNotifier {
           .doc(recipeId)
           .update({
         "recently_viewd_users_ids":
-        FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])
+            FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])
       });
     } catch (e) {}
   }
@@ -129,7 +189,7 @@ class RecipeProvider extends ChangeNotifier {
           .doc(recipeId)
           .update({
         "recently_viewd_users_ids":
-        FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid])
+            FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid])
       });
     } catch (e) {}
   }
@@ -143,7 +203,7 @@ class RecipeProvider extends ChangeNotifier {
             .doc(recipeId)
             .update({
           "favourite_users_ids":
-          FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])
+              FieldValue.arrayUnion([FirebaseAuth.instance.currentUser?.uid])
         });
       } else {
         await FirebaseFirestore.instance
@@ -151,7 +211,7 @@ class RecipeProvider extends ChangeNotifier {
             .doc(recipeId)
             .update({
           "favourite_users_ids":
-          FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid])
+              FieldValue.arrayRemove([FirebaseAuth.instance.currentUser?.uid])
         });
       }
       await _updateRecipe(recipeId);
@@ -167,6 +227,7 @@ class RecipeProvider extends ChangeNotifier {
     }
   }
 
+
   Future<void> _updateRecipe(String recipeId) async {
     try {
       var result = await FirebaseFirestore.instance
@@ -181,7 +242,7 @@ class RecipeProvider extends ChangeNotifier {
       }
 
       var recipesListIndex =
-      recipeList?.indexWhere((recipe) => recipe.docId == recipeId);
+          recipeList?.indexWhere((recipe) => recipe.docId == recipeId);
 
       if (recipesListIndex != -1) {
         recipeList?.removeAt(recipesListIndex!);
@@ -189,7 +250,7 @@ class RecipeProvider extends ChangeNotifier {
       }
 
       var freshRecipesListIndex =
-      freshRecipesList?.indexWhere((recipe) => recipe.docId == recipeId);
+          freshRecipesList?.indexWhere((recipe) => recipe.docId == recipeId);
 
       if (freshRecipesListIndex != -1) {
         freshRecipesList?.removeAt(freshRecipesListIndex!);
@@ -211,3 +272,4 @@ class RecipeProvider extends ChangeNotifier {
     }
   }
 }
+
