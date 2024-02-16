@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Stack(
                 children: [
                   Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           image: DecorationImage(image: AssetImage("assets/images/background.png"),
                               fit: BoxFit.cover)
                       )),
@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.fromLTRB(80, 20, 10, 20),
                     child: Container(
                       height: 250, width: 250,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           image: DecorationImage(image: AssetImage("assets/images/logo3.png",),)
                       ),
                     ),
@@ -48,15 +48,15 @@ class _LoginPageState extends State<LoginPage> {
                     child: Center(
                       child: ListView(
                         children: [
-                          SizedBox(height: 50),
-                          Center(
+                          const SizedBox(height: 50),
+                          const Center(
                               child: Text("Sign In", style: TextStyle(fontSize: 20,
                                   color: Colors.white, fontWeight: FontWeight.bold),)),
-                          SizedBox(height: 40,),
+                          const SizedBox(height: 40,),
                           TextFormField(
                             controller: authProvider.emailController,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                                 errorStyle: TextStyle(color: Colors.red),
                                 prefixIcon: Icon(Icons.email_outlined, color: Colors.white),
                                 labelText: "Email Address",
@@ -64,16 +64,16 @@ class _LoginPageState extends State<LoginPage> {
                                 enabledBorder: UnderlineInputBorder(borderSide:
                                 BorderSide(color: Colors.white))
                             ),
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: const TextStyle(fontSize: 15, color: Colors.white),
 
                           ),
-                          SizedBox(height: 20,),
+                          const SizedBox(height: 20,),
                           TextFormField(
                               controller: authProvider.passwordController,
                               obscureText: authProvider.obSecureText,
                               decoration: InputDecoration(
-                                  errorStyle: TextStyle(color: Colors.red),
-                                  prefixIcon: Icon(Icons.lock_outline, color: Colors.white),
+                                  errorStyle: const TextStyle(color: Colors.red),
+                                  prefixIcon: const Icon(Icons.lock_outline, color: Colors.white),
                                   suffixIcon: InkWell(onTap: () => authProvider.toggleObSecure(),
                                     child: Icon(color: Colors.white,
                                         authProvider.obSecureText
@@ -81,11 +81,11 @@ class _LoginPageState extends State<LoginPage> {
                                             : Icons.visibility),
                                   ),
                                   labelText: "Password",
-                                  labelStyle: TextStyle(color: Colors.white),
-                                  enabledBorder: UnderlineInputBorder(borderSide:
+                                  labelStyle: const TextStyle(color: Colors.white),
+                                  enabledBorder: const UnderlineInputBorder(borderSide:
                                   BorderSide(color: Colors.white))
                               ),
-                              style: TextStyle(fontSize: 15, color: Colors.white),
+                              style: const TextStyle(fontSize: 15, color: Colors.white),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'password is required';
@@ -103,9 +103,9 @@ class _LoginPageState extends State<LoginPage> {
                                   TextButton(onPressed: (){
                                      Navigator.push(context,
                                     MaterialPageRoute(builder: (_) =>
-                                    ForgetPasswordPage()));
+                                    const ForgetPasswordPage()));
                                                               }, child:
-                                      Text("Forgot Password?", textAlign: TextAlign.right,
+                                      const Text("Forgot Password?", textAlign: TextAlign.right,
                                   style: TextStyle(color: Colors.blue))),
                                 ],
                           ),
@@ -115,9 +115,9 @@ class _LoginPageState extends State<LoginPage> {
                               authProvider.signIn(context);
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (_) =>
-                                      HomePage()));
+                                      const HomePage()));
                               // }
-                            }, child: Text("Sign In", style: TextStyle(fontSize: 18, color: Colors.white),),
+                            }, child: const Text("Sign In", style: TextStyle(fontSize: 18, color: Colors.white),),
                               style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
 
@@ -126,12 +126,12 @@ class _LoginPageState extends State<LoginPage> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(80, 60, 40, 10),
                             child: Row(children: [
-                              Text("Don't have an account? ", style: TextStyle(color: Colors.white,),
+                              const Text("Don't have an account? ", style: TextStyle(color: Colors.white,),
                                 textAlign: TextAlign.center,),
                               TextButton(onPressed: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage()));
                               },
-                                  child: Text("Register", style: TextStyle(color: Colors.deepOrange)))
+                                  child: const Text("Register", style: TextStyle(color: Colors.deepOrange)))
                             ],),
                           )
                         ],

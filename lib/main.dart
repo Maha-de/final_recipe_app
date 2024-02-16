@@ -6,6 +6,7 @@ import 'package:recipe_app/provider/app_auth.provider.dart';
 import 'package:recipe_app/provider/favorite.provider.dart';
 import 'package:recipe_app/provider/ingredient.provider.dart';
 import 'package:recipe_app/provider/recipe.provider.dart';
+import 'package:sizer/sizer.dart';
 
 import 'firebase_options.dart';
 
@@ -36,13 +37,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: "Hellix",
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        useMaterial3: true,
-      ),
-      home: const SplashScreen(),
+    return Sizer(
+        builder: (context, orientation, deviceType)
+    {
+      return MaterialApp(
+        theme: ThemeData(
+          fontFamily: "Hellix",
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+          useMaterial3: true,
+        ),
+        home: const SplashScreen(),
+      );
+    }
     );
   }
 }

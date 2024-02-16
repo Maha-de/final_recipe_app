@@ -159,7 +159,7 @@ class _RecentlyPageState extends State<RecentlyPage> {
                                             //           )));
                                             // },
                                             child: Container(
-                                              height: 150,
+                                              height: 170,
                                               width: 345,
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(20),
@@ -251,6 +251,38 @@ class _RecentlyPageState extends State<RecentlyPage> {
                                                                   fontWeight: FontWeight.normal,
                                                                   color: Colors.grey,
                                                                 )),
+                                                            Column(
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(top: 10.0, right: 10),
+                                                                  child: InkWell(
+                                                                      onTap: () {
+                                                                        Provider.of<RecipeProvider>(context,
+                                                                            listen: false)
+                                                                            .addRecipeToUserFavourite(
+                                                                            widget.recipe!.docId!,
+                                                                            !(widget.recipe?.favourite_users_ids
+                                                                                ?.contains(FirebaseAuth.instance
+                                                                                .currentUser?.uid) ??
+                                                                                false));
+                                                                      },
+                                                                      child: (widget.recipe?.favourite_users_ids
+                                                                          ?.contains(FirebaseAuth
+                                                                          .instance.currentUser?.uid) ??
+                                                                          false
+                                                                          ? const Icon(
+                                                                        Icons.favorite_rounded,
+                                                                        size: 30,
+                                                                        color: Colors.red,
+                                                                      )
+                                                                          : const Icon(
+                                                                        Icons.favorite_rounded,
+                                                                        size: 30,
+                                                                        color: Colors.grey,
+                                                                      ))),
+                                                                ),
+                                                              ],
+                                                            ),
                                                             // Consumer<RecipeProvider>(
                                                             //   builder: (ctx,
                                                             //       recipeProvider,

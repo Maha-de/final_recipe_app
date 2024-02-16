@@ -28,6 +28,7 @@ class _RecipeWidgetState extends State<RecipeWidget> {
     super.initState();
   }
 
+
   void _fetchRatingFromFirestore() async {
     try{
       DocumentSnapshot ratingSnapshot =
@@ -68,7 +69,7 @@ class _RecipeWidgetState extends State<RecipeWidget> {
             },
             child: Container(
               width: 200,
-              height: 380,
+              height: 220,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: Color(
@@ -151,14 +152,15 @@ class _RecipeWidgetState extends State<RecipeWidget> {
                             width: 5,
                           ),
                           Text(
-                            widget.recipe?.total_time.toString() ?? "",
+                            "${widget.recipe?.total_time.toString() ?? ""} .",
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
                               color: Colors.grey,
                             ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 5,),
                           const Icon(
                             Icons.room_service_outlined,
                             size: 20,
@@ -168,8 +170,8 @@ class _RecipeWidgetState extends State<RecipeWidget> {
                             width: 5,
                           ),
                           Text(
-                            "${widget.recipe?.servings?? 0}",
-                            // overflow: TextOverflow.ellipsis,
+                            "${widget.recipe?.servings?? 0} ",
+                            overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: const TextStyle(
                               fontSize: 12,

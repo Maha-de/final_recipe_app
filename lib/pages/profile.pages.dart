@@ -8,6 +8,7 @@ import 'package:overlay_kit/overlay_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/provider/recipe.provider.dart';
 import '../provider/app_auth.provider.dart';
+import 'homepage.pages.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -72,6 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _fetchProfileImageUrl() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     final userData = await usersCollection.doc(currentUser!.email).get();
+
     setState(() {
       _profileImageUrl = userData['profileImageUrl'] ?? '';
     });
@@ -87,7 +89,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     // User? currentUser = authService.getCurrentUser();
-
+    // final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    // final profileProvider = Provider.of<RecipeProvider>(context);
+    // profileProvider.setProfileImageUrl(userId);
    
     return Scaffold(
       appBar: AppBar(
@@ -109,7 +113,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ListView(
                 children: [
                   Center(
-                    child: _profileImageUrl.isEmpty
+                    child:
+                    // ProfileImageWidget()
+                    _profileImageUrl.isEmpty
                         ? Container(
                       height: 150,
                       width: 150,
@@ -123,7 +129,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           border:
                           Border.all(color: Colors.black, width: 5)),
                     )
-                        : Container(
+                    :
+                    Container(
                       height: 150,
                       width: 150,
                       decoration: BoxDecoration(

@@ -22,6 +22,7 @@ class _FilterPageState extends State<FilterPage> {
 
   List<String> selectedFilters = [];
 
+
   getFilteredResult() async {
     print('getFilteredResult() method called');
 
@@ -35,27 +36,33 @@ class _FilterPageState extends State<FilterPage> {
       print('Filter applied: ${selectedUserValue['type']}');
     }
     if (_values != null && _values.start != null && _values.end != null) {
-      Query servingQuery = filteredQuery.where("servings", isGreaterThanOrEqualTo: _values.start)
+      Query servingQuery = filteredQuery.where(
+          "servings", isGreaterThanOrEqualTo: _values.start)
           .where("servings", isLessThanOrEqualTo: _values.end);
       QuerySnapshot servingSnapshot = await servingQuery.get();
       List<QueryDocumentSnapshot> servingRecipes = servingSnapshot.docs;
+      print(servingRecipes);
 
-      for (var recipeSnapshot in servingRecipes) {
-        // Access fields within each document
-        var recipeData = recipeSnapshot.data();
 
-        if (recipeData is Map<String, dynamic>) {
-          var title = recipeData['title'];
-          var servings = recipeData['servings'];
-          // Process or display the recipe data as needed
-          print('Recipe: $title - Servings: $servings');
-        } else {
-          // Handle the case where recipeData is not a Map<String, dynamic>
-          print('Recipe data is not of type Map<String, dynamic>');
-        }
-      }
+      // for (var recipeSnapshot in servingRecipes) {
+      //   // Access fields within each document
+      //   var recipeData = recipeSnapshot.data();
+      //
+      //   if (recipeData is Map<String, dynamic>) {
+      //     var title = recipeData['title'];
+      //     var servings = recipeData['servings'];
+      //     // Process or display the recipe data as needed
+      //     print('Recipe: $title - Servings: $servings');
+      //   } else {
+      //     // Handle the case where recipeData is not a Map<String, dynamic>
+      //     print('Recipe data is not of type Map<String, dynamic>');
+      //   }
+      // }
 
     }
+
+
+
     if (_values1 != null && _values1.start != null && _values1.end != null) {
       Query totalTimeQuery = filteredQuery.where("total_time", isGreaterThanOrEqualTo: _values1.start)
           .where("total_time", isLessThanOrEqualTo: _values1.end);
@@ -76,6 +83,8 @@ class _FilterPageState extends State<FilterPage> {
 
     // Handle querySnapshot to get filtered recipes
     List<QueryDocumentSnapshot> recipes = querySnapshot.docs;
+
+
 
     // Do something with the filtered recipes
     Navigator.push(
@@ -175,6 +184,7 @@ class _FilterPageState extends State<FilterPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SfRangeSlider(
+
               min: 1.0,
               max: 15.0,
               interval: 1,

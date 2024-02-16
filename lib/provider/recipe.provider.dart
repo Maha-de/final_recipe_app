@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_kit/overlay_kit.dart';
 import 'package:recipe_app/models/recipe.models.dart';
@@ -9,14 +10,34 @@ import '../widgets/toast_message.widgets.dart';
 
 class RecipeProvider extends ChangeNotifier {
   var value = {"type": "breakfast", "serving": 5, "total_time": 20};
-  String _profileImageUrl = '';
-
+  late String _profileImageUrl = '';
   String get profileImageUrl => _profileImageUrl;
+  static final storage = FirebaseStorage.instance;
 
-  void setImageUrl(String url) {
-    _profileImageUrl = url;
-    notifyListeners();
+  Future<String?> getProfileImageUrl(String userId) async {
+    try {
+      final ref = storage.ref().child('profile_images/$userId');
+      final url = await ref.getDownloadURL();
+      return url;
+    } catch (e) {
+      // Handle error
+      print('Error getting profile image URL: $e');
+      return null;
+    }
   }
+
+  // Future<void> setProfileImageUrl(String userId) async {
+  //   final snapshot = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(userId)
+  //       .get();
+  //
+  //   _profileImageUrl = snapshot.data()?['profileImageUrl'];
+  //   notifyListeners();
+  // }
+
+
+
 
   Future<void> getFilteredResult() async {
     try {

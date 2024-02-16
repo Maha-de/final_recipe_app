@@ -49,6 +49,7 @@ dependencies:
   chips_choice: ^3.0.1
   syncfusion_flutter_sliders: ^24.1.47
   cached_network_image: ^3.3.1
+  sizer: ^2.0.15
 
 dev_dependencies:
   flutter_test:

@@ -14,7 +14,8 @@ class FilteredPage extends StatefulWidget {
   final Recipe? recipe;
   final List<QueryDocumentSnapshot> recipes;
 
-  const FilteredPage({super.key, this.recipe, required this.recipes});
+
+  const FilteredPage({super.key, this.recipe, required this.recipes,});
 
   @override
   State<FilteredPage> createState() => _FilteredPageState();
@@ -51,7 +52,9 @@ class _FilteredPageState extends State<FilteredPage> {
       appBar: AppBar(
         title: const Text('Filtered Recipes'),
       ),
-      body: ListView.builder(
+      body:
+
+      ListView.builder(
         itemCount: widget.recipes.length,
         itemBuilder: (context, index) {
           QueryDocumentSnapshot recipe = widget.recipes[index];
